@@ -32,7 +32,7 @@ shared_examples_for :subscription_controller do
         @notification = create(:notification, target: test_target, key: 'test_notification_key')
         get_with_compatibility :index, target_params.merge({ typed_target_param => test_target }), valid_session
       end
-  
+
       it "returns 200 as http status code" do
         expect(response.status).to eq(200)
       end
@@ -182,15 +182,15 @@ shared_examples_for :subscription_controller do
           @notification = create(:notification, target: test_target, key: 'test_notification_key')
           get_with_compatibility :index, target_params.merge({ typed_target_param => test_target, reload: false }), valid_session
         end
-    
+
         it "returns 200 as http status code" do
           expect(response.status).to eq(200)
         end
-  
+
         it "does not assign subscription index as @subscriptions" do
           expect(assigns(:subscriptions)).to be_nil
         end
-  
+
         it "does not assign unconfigured notification keys as @notification_keys" do
           expect(assigns(:notification_keys)).to be_nil
         end
@@ -227,7 +227,7 @@ shared_examples_for :subscription_controller do
 
   describe "POST #create" do
     before do
-      expect(test_target.subscriptions.size).to      eq(0)
+      expect(test_target.notifications_subscriptions.size).to      eq(0)
     end
 
     context "http direct POST request without optional targets" do
@@ -246,8 +246,8 @@ shared_examples_for :subscription_controller do
       end
 
       it "creates new subscription of the target" do
-        expect(test_target.subscriptions.reload.size).to      eq(1)
-        expect(test_target.subscriptions.reload.first.key).to eq("new_subscription_key")
+        expect(test_target.notifications_subscriptions.reload.size).to      eq(1)
+        expect(test_target.notifications_subscriptions.reload.first.key).to eq("new_subscription_key")
       end
 
       it "redirects to :index" do
@@ -272,8 +272,8 @@ shared_examples_for :subscription_controller do
       end
 
       it "creates new subscription of the target" do
-        expect(test_target.subscriptions.reload.size).to      eq(1)
-        created_subscription = test_target.subscriptions.reload.first
+        expect(test_target.notifications_subscriptions.reload.size).to      eq(1)
+        created_subscription = test_target.notifications_subscriptions.reload.first
         expect(created_subscription.key).to eq("new_subscription_key")
         expect(created_subscription.subscribing_to_optional_target?("base1")).to be_truthy
         expect(created_subscription.subscribing_to_optional_target?("base2")).to be_falsey
@@ -301,8 +301,8 @@ shared_examples_for :subscription_controller do
       end
 
       it "creates new subscription of the target" do
-        expect(test_target.subscriptions.reload.size).to      eq(1)
-        expect(test_target.subscriptions.reload.first.key).to eq("new_subscription_key")
+        expect(test_target.notifications_subscriptions.reload.size).to      eq(1)
+        expect(test_target.notifications_subscriptions.reload.first.key).to eq("new_subscription_key")
       end
 
       it "redirects to root_path as request.referer" do
@@ -327,12 +327,12 @@ shared_examples_for :subscription_controller do
       end
 
       it "assigns subscription index as @subscriptions" do
-        expect(assigns(:subscriptions)).to eq([test_target.subscriptions.reload.first])
+        expect(assigns(:subscriptions)).to eq([test_target.notifications_subscriptions.reload.first])
       end
 
       it "creates new subscription of the target" do
-        expect(test_target.subscriptions.reload.size).to      eq(1)
-        expect(test_target.subscriptions.reload.first.key).to eq("new_subscription_key")
+        expect(test_target.notifications_subscriptions.reload.size).to      eq(1)
+        expect(test_target.notifications_subscriptions.reload.first.key).to eq("new_subscription_key")
       end
 
       it "renders the :create template as format js" do
@@ -385,7 +385,7 @@ shared_examples_for :subscription_controller do
       end
 
       it "deletes the subscription" do
-        expect(assigns(test_target.subscriptions.where(id: @subscription.id).exists?)).to be_falsey
+        expect(assigns(test_target.notifications_subscriptions.where(id: @subscription.id).exists?)).to be_falsey
       end
 
       it "redirects to :index" do
@@ -405,7 +405,7 @@ shared_examples_for :subscription_controller do
       end
 
       it "deletes the subscription" do
-        expect(assigns(test_target.subscriptions.where(id: @subscription.id).exists?)).to be_falsey
+        expect(assigns(test_target.notifications_subscriptions.where(id: @subscription.id).exists?)).to be_falsey
       end
 
       it "redirects to root_path as request.referer" do
@@ -428,7 +428,7 @@ shared_examples_for :subscription_controller do
       end
 
       it "deletes the subscription" do
-        expect(assigns(test_target.subscriptions.where(id: @subscription.id).exists?)).to be_falsey
+        expect(assigns(test_target.notifications_subscriptions.where(id: @subscription.id).exists?)).to be_falsey
       end
 
       it "renders the :destroy template as format js" do
@@ -489,11 +489,11 @@ shared_examples_for :subscription_controller do
         request.env["HTTP_REFERER"] = root_path
         xhr_with_compatibility :post, :subscribe, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
       end
-  
+
       it "returns 200 as http status code" do
         expect(response.status).to eq(200)
       end
-  
+
       it "assigns subscription index as @subscriptions" do
         expect(assigns(:subscriptions)).to eq([@subscription])
       end
@@ -557,11 +557,11 @@ shared_examples_for :subscription_controller do
         request.env["HTTP_REFERER"] = root_path
         xhr_with_compatibility :post, :unsubscribe, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
       end
-  
+
       it "returns 200 as http status code" do
         expect(response.status).to eq(200)
       end
-  
+
       it "assigns subscription index as @subscriptions" do
         expect(assigns(:subscriptions)).to eq([@subscription])
       end
@@ -628,11 +628,11 @@ shared_examples_for :subscription_controller do
         request.env["HTTP_REFERER"] = root_path
         xhr_with_compatibility :post, :subscribe_to_email, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
       end
-  
+
       it "returns 200 as http status code" do
         expect(response.status).to eq(200)
       end
-  
+
       it "assigns subscription index as @subscriptions" do
         expect(assigns(:subscriptions)).to eq([@subscription])
       end
@@ -718,11 +718,11 @@ shared_examples_for :subscription_controller do
         request.env["HTTP_REFERER"] = root_path
         xhr_with_compatibility :post, :unsubscribe_to_email, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
       end
-  
+
       it "returns 200 as http status code" do
         expect(response.status).to eq(200)
       end
-  
+
       it "assigns subscription index as @subscriptions" do
         expect(assigns(:subscriptions)).to eq([@subscription])
       end
@@ -806,11 +806,11 @@ shared_examples_for :subscription_controller do
         request.env["HTTP_REFERER"] = root_path
         xhr_with_compatibility :post, :subscribe_to_optional_target, target_params.merge({ id: @subscription, optional_target_name: 'base', typed_target_param => test_target }), valid_session
       end
-  
+
       it "returns 200 as http status code" do
         expect(response.status).to eq(200)
       end
-  
+
       it "assigns subscription index as @subscriptions" do
         expect(assigns(:subscriptions)).to eq([@subscription])
       end
@@ -913,11 +913,11 @@ shared_examples_for :subscription_controller do
         request.env["HTTP_REFERER"] = root_path
         xhr_with_compatibility :post, :unsubscribe_to_optional_target, target_params.merge({ id: @subscription, optional_target_name: 'base', typed_target_param => test_target }), valid_session
       end
-  
+
       it "returns 200 as http status code" do
         expect(response.status).to eq(200)
       end
-  
+
       it "assigns subscription index as @subscriptions" do
         expect(assigns(:subscriptions)).to eq([@subscription])
       end
